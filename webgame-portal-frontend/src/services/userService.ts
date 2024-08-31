@@ -7,11 +7,14 @@ export interface UserProfile {
   avatarUrl: string;
   totalPlayTime: number;
   favoriteGame: string;
+  highestScore: number;
+  badges: string[];
   gamesPlayed: {
     gameId: string;
     gameName: string;
     playCount: number;
     highScore: number;
+    lastPlayed: string;
   }[];
 }
 

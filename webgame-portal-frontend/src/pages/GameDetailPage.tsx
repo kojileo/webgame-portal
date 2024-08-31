@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState, AppDispatch } from "../store";
+import { AppDispatch, RootState } from "../store";
 import {
   fetchGameById,
-  Game,
   updateGamePlayCount,
+  Game,
 } from "../services/gameService";
+import { Review, submitReview, fetchReviews } from "../services/reviewService";
 import Layout from "../components/Layout";
 import MazeGame from "../components/MazeGame";
+import ReviewSection from "../components/ReviewSection";
 import styled from "styled-components";
 
 const GameContainer = styled.div`
@@ -56,31 +58,49 @@ const GameDetailPage: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const isLoggedIn = useSelector((state: RootState) => state.user.isLoggedIn);
   const dispatch = useDispatch<AppDispatch>();
+  const [reviews, setReviews] = useState<Review[]>([]);
 
   useEffect(() => {
-    const loadGame = async () => {
-      try {
-        if (id) {
-          const gameData = await fetchGameById(id);
+    const loadGameAndReviews = async () => {
+      if (id) {
+        try {
+          const [gameData, reviewsData] = await Promise.all([
+            fetchGameById(id),
+            fetchReviews(id),
+          ]);
           setGame(gameData);
+          setReviews(reviewsData);
+        } catch (err) {
+          setError("データの読み込みに失敗しました");
+        } finally {
+          setLoading(false);
         }
-      } catch (err) {
-        setError("ゲームの読み込みに失敗しました");
-      } finally {
-        setLoading(false);
       }
     };
 
-    loadGame();
-  }, [id, dispatch]);
+    loadGameAndReviews();
+  }, [id]);
+
+  const handleSubmitReview = async (rating: number, comment: string) => {
+    if (id) {
+      try {
+        const newReview = await submitReview(id, rating, comment);
+        setReviews((prev) => [newReview, ...prev]);
+      } catch (err) {
+        console.error("レビューの送信に失敗しました", err);
+      }
+    }
+  };
 
   const handlePlayGame = async () => {
     setIsPlaying(true);
-    if (id) {
-      await updateGamePlayCount(id);
-      // ゲーム情報を再取得して表示を更新
-      const updatedGame = await fetchGameById(id);
-      setGame(updatedGame);
+    if (id && game) {
+      try {
+        await updateGamePlayCount(id);
+        setGame({ ...game, playCount: game.playCount + 1 });
+      } catch (err) {
+        console.error("プレイ回数の更新に失敗しました", err);
+      }
     }
   };
 
@@ -97,10 +117,19 @@ const GameDetailPage: React.FC = () => {
             <GameTitle>{game.title}</GameTitle>
             <GameDescription>{game.description}</GameDescription>
             <p>プレイ回数: {game.playCount}</p>
+            <p>カテゴリ: {game.category}</p>
+            <p>タグ: {game.tags.join(", ")}</p>
             {isLoggedIn ? (
               <PlayButton onClick={handlePlayGame}>プレイ開始</PlayButton>
             ) : (
               <p>プレイするにはログインしてください</p>
+            )}
+            {id && (
+              <ReviewSection
+                gameId={id}
+                reviews={reviews}
+                onSubmitReview={handleSubmitReview}
+              />
             )}
           </>
         ) : (

@@ -5,6 +5,8 @@ export interface IGame extends Document {
   description: string;
   imageUrl: string;
   playCount: number;
+  category: string;
+  tags: string[];
 }
 
 const GameSchema: Schema = new Schema({
@@ -12,6 +14,8 @@ const GameSchema: Schema = new Schema({
   description: { type: String, required: true },
   imageUrl: { type: String, required: true },
   playCount: { type: Number, default: 0 },
+  category: { type: String, required: true },
+  tags: [{ type: String }],
 });
 
 export default mongoose.model<IGame>("Game", GameSchema);

@@ -6,8 +6,10 @@ import {
   updateUserProfile,
   UserProfile,
 } from "../services/userService";
+import { getFriendList, Friend } from "../services/friendService";
 import { setUser } from "../store/userSlice";
 import Layout from "../components/Layout";
+import FriendList from "../components/FriendList";
 import styled from "styled-components";
 
 const ProfileContainer = styled.div`
@@ -87,8 +89,29 @@ const Input = styled.input`
   border-radius: 4px;
 `;
 
+const StatsSection = styled.div`
+  background-color: #16202d;
+  padding: 1rem;
+  margin-bottom: 1rem;
+`;
+
+const BadgeSection = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+`;
+
+const Badge = styled.div`
+  background-color: #2a475e;
+  color: #c6d4df;
+  padding: 0.5rem;
+  border-radius: 4px;
+`;
+
 const UserProfilePage: React.FC = () => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [friends, setFriends] = useState<Friend[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const userId = useSelector((state: RootState) => state.user.id);
@@ -120,19 +143,23 @@ const UserProfilePage: React.FC = () => {
   };
 
   useEffect(() => {
-    const loadProfile = async () => {
+    const loadProfileAndFriends = async () => {
       if (!userId) return;
       try {
-        const profileData = await fetchUserProfile(userId);
+        const [profileData, friendsData] = await Promise.all([
+          fetchUserProfile(userId),
+          getFriendList(),
+        ]);
         setProfile(profileData);
+        setFriends(friendsData);
       } catch (err) {
-        setError("プロフィールの読み込みに失敗しました");
+        setError("データの読み込みに失敗しました");
       } finally {
         setLoading(false);
       }
     };
 
-    loadProfile();
+    loadProfileAndFriends();
   }, [userId]);
 
   if (loading) return <Layout>読み込み中...</Layout>;
@@ -147,10 +174,35 @@ const UserProfilePage: React.FC = () => {
           <Username>{profile.username}</Username>
         </ProfileHeader>
 
-        <StatsList>
-          <StatItem>総プレイ時間: {profile.totalPlayTime} 時間</StatItem>
-          <StatItem>お気に入りのゲーム: {profile.favoriteGame}</StatItem>
-        </StatsList>
+        <StatsSection>
+          <h3>統計情報</h3>
+          <p>総プレイ時間: {profile.totalPlayTime} 時間</p>
+          <p>プレイしたゲーム数: {profile.gamesPlayed.length}</p>
+          <p>最高スコア: {profile.highestScore}</p>
+          <p>獲得バッジ数: {profile.badges.length}</p>
+        </StatsSection>
+
+        <BadgeSection>
+          <h3>獲得バッジ</h3>
+          {profile.badges.map((badge, index) => (
+            <Badge key={index}>{badge}</Badge>
+          ))}
+        </BadgeSection>
+
+        <GamesList>
+          <h3>プレイしたゲーム</h3>
+          {profile.gamesPlayed.map((game) => (
+            <GameItem key={game.gameId}>
+              <h4>{game.gameName}</h4>
+              <p>プレイ回数: {game.playCount}</p>
+              <p>最高スコア: {game.highScore}</p>
+              <p>
+                最後にプレイした日:{" "}
+                {new Date(game.lastPlayed).toLocaleDateString()}
+              </p>
+            </GameItem>
+          ))}
+        </GamesList>
 
         {!isEditing ? (
           <EditButton onClick={handleEdit}>プロフィールを編集</EditButton>
@@ -182,17 +234,7 @@ const UserProfilePage: React.FC = () => {
             </EditButton>
           </EditForm>
         )}
-
-        <GamesList>
-          <h3>プレイしたゲーム</h3>
-          {profile.gamesPlayed.map((game) => (
-            <GameItem key={game.gameId}>
-              <h4>{game.gameName}</h4>
-              <p>プレイ回数: {game.playCount}</p>
-              <p>最高スコア: {game.highScore}</p>
-            </GameItem>
-          ))}
-        </GamesList>
+        <FriendList friends={friends} />
       </ProfileContainer>
     </Layout>
   );

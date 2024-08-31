@@ -6,7 +6,8 @@ export interface Game {
   description: string;
   imageUrl: string;
   playCount: number;
-  // 他の必要なゲーム情報を追加
+  category: string;
+  tags: string[];
 }
 
 export const fetchGames = async (): Promise<Game[]> => {

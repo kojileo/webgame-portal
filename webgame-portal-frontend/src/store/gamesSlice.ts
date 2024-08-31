@@ -1,11 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
-interface Game {
-  id: string;
-  title: string;
-  description: string;
-  imageUrl: string;
-}
+import { Game } from "../services/gameService";
 
 interface GamesState {
   list: Game[];
