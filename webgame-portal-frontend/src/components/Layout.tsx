@@ -6,14 +6,13 @@ import { logoutUser } from "../store/userSlice";
 import styled from "styled-components";
 
 const LayoutWrapper = styled.div`
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 `;
 
 const Header = styled.header`
-  background-color: #333;
-  color: white;
+  background-color: #171a21;
   padding: 1rem 0;
 `;
 
@@ -21,34 +20,33 @@ const Nav = styled.nav`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
 `;
 
 const NavLink = styled(Link)`
-  color: white;
+  color: #c6d4df;
   text-decoration: none;
   margin-right: 1rem;
-
   &:hover {
-    text-decoration: underline;
+    color: #ffffff;
   }
 `;
 
-const LogoutButton = styled.button`
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-
-  &:hover {
-    text-decoration: underline;
-  }
+const MainContent = styled.main`
+  flex: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  width: 100%;
 `;
 
 const Footer = styled.footer`
-  background-color: #333;
-  color: white;
+  background-color: #171a21;
+  color: #8f98a0;
   padding: 1rem 0;
-  margin-top: 2rem;
+  text-align: center;
 `;
 
 interface LayoutProps {
@@ -78,9 +76,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <div>
             {isLoggedIn ? (
               <>
-                <span>ようこそ、{username}さん</span>
                 <NavLink to="/profile">プロフィール</NavLink>
-                <LogoutButton onClick={handleLogout}>ログアウト</LogoutButton>
+                <NavLink to="/" onClick={handleLogout}>
+                  ログアウト
+                </NavLink>
               </>
             ) : (
               <>
@@ -91,7 +90,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </div>
         </Nav>
       </Header>
-      <main>{children}</main>
+      <MainContent>{children}</MainContent>
       <Footer>
         <p>&copy; 2024 Webゲームポータル</p>
       </Footer>

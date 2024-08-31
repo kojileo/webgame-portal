@@ -9,38 +9,51 @@ import styled from "styled-components";
 
 const GameGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 1rem;
 `;
 
 const GameCard = styled.div`
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 1rem;
-  text-align: center;
+  background-color: #16202d;
+  border-radius: 4px;
+  overflow: hidden;
+  transition: transform 0.2s;
+  &:hover {
+    transform: translateY(-5px);
+  }
 `;
 
 const GameImage = styled.img`
-  max-width: 100%;
+  width: 100%;
   height: auto;
-  margin-bottom: 1rem;
+`;
+
+const GameInfo = styled.div`
+  padding: 0.5rem;
 `;
 
 const GameTitle = styled.h3`
-  margin-bottom: 0.5rem;
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+  color: #c6d4df;
+`;
+
+const GameDescription = styled.p`
+  font-size: 0.8rem;
+  color: #8f98a0;
+  margin: 0;
 `;
 
 const GameLink = styled(Link)`
-  display: inline-block;
-  margin-top: 1rem;
-  padding: 0.5rem 1rem;
-  background-color: #007bff;
-  color: white;
+  display: block;
+  padding: 0.5rem;
+  background-color: #2a475e;
+  color: #c6d4df;
+  text-align: center;
   text-decoration: none;
-  border-radius: 5px;
-
   &:hover {
-    background-color: #0056b3;
+    background-color: #66c0f4;
+    color: #ffffff;
   }
 `;
 
@@ -80,8 +93,12 @@ const GameListPage: React.FC = () => {
         {games.map((game) => (
           <GameCard key={game.id}>
             <GameImage src={game.imageUrl} alt={game.title} />
-            <GameTitle>{game.title}</GameTitle>
-            <p>{game.description}</p>
+            <GameInfo>
+              <GameTitle>{game.title}</GameTitle>
+              <GameDescription>
+                {game.description.substring(0, 100)}...
+              </GameDescription>
+            </GameInfo>
             <GameLink to={`/games/${game.id}`}>詳細を見る</GameLink>
           </GameCard>
         ))}
