@@ -7,10 +7,7 @@ import {
   updateGamePlayCount,
   Game,
 } from "../services/gameService";
-import { Review, submitReview, fetchReviews } from "../services/reviewService";
 import Layout from "../components/Layout";
-import MazeGame from "../components/MazeGame";
-import ReviewSection from "../components/ReviewSection";
 import styled from "styled-components";
 
 const GameContainer = styled.div`
@@ -58,18 +55,13 @@ const GameDetailPage: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const isLoggedIn = useSelector((state: RootState) => state.user.isLoggedIn);
   const dispatch = useDispatch<AppDispatch>();
-  const [reviews, setReviews] = useState<Review[]>([]);
 
   useEffect(() => {
     const loadGameAndReviews = async () => {
       if (id) {
         try {
-          const [gameData, reviewsData] = await Promise.all([
-            fetchGameById(id),
-            fetchReviews(id),
-          ]);
+          const [gameData] = await Promise.all([fetchGameById(id)]);
           setGame(gameData);
-          setReviews(reviewsData);
         } catch (err) {
           setError("データの読み込みに失敗しました");
         } finally {
@@ -80,17 +72,6 @@ const GameDetailPage: React.FC = () => {
 
     loadGameAndReviews();
   }, [id]);
-
-  const handleSubmitReview = async (rating: number, comment: string) => {
-    if (id) {
-      try {
-        const newReview = await submitReview(id, rating, comment);
-        setReviews((prev) => [newReview, ...prev]);
-      } catch (err) {
-        console.error("レビューの送信に失敗しました", err);
-      }
-    }
-  };
 
   const handlePlayGame = async () => {
     setIsPlaying(true);
@@ -111,30 +92,19 @@ const GameDetailPage: React.FC = () => {
   return (
     <Layout>
       <GameContainer>
-        {!isPlaying ? (
-          <>
-            <GameImage src={game.imageUrl} alt={game.title} />
-            <GameTitle>{game.title}</GameTitle>
-            <GameDescription>{game.description}</GameDescription>
-            <p>プレイ回数: {game.playCount}</p>
-            <p>カテゴリ: {game.category}</p>
-            <p>タグ: {game.tags.join(", ")}</p>
-            {isLoggedIn ? (
-              <PlayButton onClick={handlePlayGame}>プレイ開始</PlayButton>
-            ) : (
-              <p>プレイするにはログインしてください</p>
-            )}
-            {id && (
-              <ReviewSection
-                gameId={id}
-                reviews={reviews}
-                onSubmitReview={handleSubmitReview}
-              />
-            )}
-          </>
-        ) : (
-          <MazeGame />
-        )}
+        <>
+          <GameImage src={game.imageUrl} alt={game.title} />
+          <GameTitle>{game.title}</GameTitle>
+          <GameDescription>{game.description}</GameDescription>
+          <p>プレイ回数: {game.playCount}</p>
+          <p>カテゴリ: {game.category}</p>
+          <p>タグ: {game.tags.join(", ")}</p>
+          {isLoggedIn ? (
+            <PlayButton onClick={handlePlayGame}>プレイ開始</PlayButton>
+          ) : (
+            <p>プレイするにはログインしてください</p>
+          )}
+        </>
       </GameContainer>
     </Layout>
   );

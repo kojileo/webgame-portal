@@ -6,10 +6,8 @@ import {
   updateUserProfile,
   UserProfile,
 } from "../services/userService";
-import { getFriendList, Friend } from "../services/friendService";
 import { setUser } from "../store/userSlice";
 import Layout from "../components/Layout";
-import FriendList from "../components/FriendList";
 import styled from "styled-components";
 
 const ProfileContainer = styled.div`
@@ -111,7 +109,6 @@ const Badge = styled.div`
 
 const UserProfilePage: React.FC = () => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [friends, setFriends] = useState<Friend[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const userId = useSelector((state: RootState) => state.user.id);
@@ -146,12 +143,8 @@ const UserProfilePage: React.FC = () => {
     const loadProfileAndFriends = async () => {
       if (!userId) return;
       try {
-        const [profileData, friendsData] = await Promise.all([
-          fetchUserProfile(userId),
-          getFriendList(),
-        ]);
+        const [profileData] = await Promise.all([fetchUserProfile(userId)]);
         setProfile(profileData);
-        setFriends(friendsData);
       } catch (err) {
         setError("データの読み込みに失敗しました");
       } finally {
@@ -234,7 +227,6 @@ const UserProfilePage: React.FC = () => {
             </EditButton>
           </EditForm>
         )}
-        <FriendList friends={friends} />
       </ProfileContainer>
     </Layout>
   );
