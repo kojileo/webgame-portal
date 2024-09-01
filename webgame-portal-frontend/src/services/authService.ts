@@ -1,6 +1,6 @@
 import api from "./api";
 
-interface LoginCredentials {
+export interface LoginCredentials {
   email: string;
   password: string;
 }

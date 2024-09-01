@@ -1,6 +1,11 @@
 import { Request, Response } from "express";
 import Game, { IGame } from "../models/Game";
+import fs from "fs";
+import path from "path";
 
+interface AuthRequest extends Request {
+  userId?: string;
+}
 export const getAllGames = async (req: Request, res: Response) => {
   try {
     const games = await Game.find();
@@ -22,13 +27,53 @@ export const getGameById = async (req: Request, res: Response) => {
   }
 };
 
-export const createGame = async (req: Request, res: Response) => {
+export const createGame = async (req: AuthRequest, res: Response) => {
   try {
-    const game = new Game(req.body);
+    const { title, description, category, tags, gameUrl } = req.body;
+    const imageUrl = req.file ? `/uploads/${req.file.filename}` : undefined;
+
+    console.log("Received data:", {
+      title,
+      description,
+      category,
+      tags,
+      gameUrl,
+      imageUrl,
+      userId: req.userId,
+    });
+
+    if (!req.userId) {
+      return res.status(401).json({ message: "認証が必要です" });
+    }
+
+    const game = new Game({
+      title,
+      description,
+      category,
+      tags: Array.isArray(tags) ? tags : JSON.parse(tags),
+      gameUrl,
+      imageUrl,
+      developer: req.userId,
+    });
+
     await game.save();
     res.status(201).json(game);
-  } catch (error) {
-    res.status(400).json({ message: "ゲームの作成に失敗しました", error });
+    const uploadsDir = path.join(__dirname, "../../uploads");
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true });
+    }
+  } catch (error: unknown) {
+    console.error("Error creating game:", error);
+    if (error instanceof Error) {
+      res
+        .status(500)
+        .json({ message: "ゲームの作成に失敗しました", error: error.message });
+    } else {
+      res.status(500).json({
+        message: "ゲームの作成に失敗しました",
+        error: "Unknown error",
+      });
+    }
   }
 };
 

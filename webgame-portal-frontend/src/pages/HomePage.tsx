@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Layout from "../components/Layout";
 import styled from "styled-components";
+import { Game, fetchGames } from "../services/gameService";
 
 const HeroSection = styled.div`
   background: linear-gradient(135deg, #1b2838 0%, #2a475e 100%);
@@ -62,14 +63,34 @@ const GameTitle = styled.h3`
   color: #c6d4df;
 `;
 
+const GameDeveloper = styled.p`
+  padding: 0 0.5rem 0.5rem;
+  margin: 0;
+  font-size: 0.8rem;
+  color: #8f98a0;
+`;
+
+const GameLink = styled.a`
+  display: block;
+  color: inherit;
+  text-decoration: none;
+`;
+
 const HomePage: React.FC = () => {
-  // フィーチャーゲームのダミーデータ
-  const featuredGames = [
-    { id: 1, title: "ゲーム1", image: "/images/action.jpg" },
-    { id: 2, title: "ゲーム2", image: "/images/horror.jpg" },
-    { id: 3, title: "ゲーム3", image: "/images/match.jpg" },
-    { id: 4, title: "ゲーム4", image: "/images/novel.jpg" },
-  ];
+  const [featuredGames, setFeaturedGames] = useState<Game[]>([]);
+
+  useEffect(() => {
+    const loadFeaturedGames = async () => {
+      try {
+        const games = await fetchGames();
+        setFeaturedGames(games.slice(0, 4)); // 最新の4つのゲームを表示
+      } catch (error) {
+        console.error("フィーチャーゲームの読み込みに失敗しました", error);
+      }
+    };
+
+    loadFeaturedGames();
+  }, []);
 
   return (
     <Layout>
@@ -83,8 +104,15 @@ const HomePage: React.FC = () => {
       <FeaturedGames>
         {featuredGames.map((game) => (
           <GameCard key={game.id}>
-            <GameImage src={game.image} alt={game.title} />
-            <GameTitle>{game.title}</GameTitle>
+            <GameLink
+              href={game.gameUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <GameImage src={game.imageUrl} alt={game.title} />
+              <GameTitle>{game.title}</GameTitle>
+              <GameDeveloper>{game.developer}</GameDeveloper>
+            </GameLink>
           </GameCard>
         ))}
       </FeaturedGames>

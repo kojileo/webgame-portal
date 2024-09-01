@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { login, register, logout } from "../services/authService";
+import { LoginCredentials } from "../services/authService";
 
 interface UserState {
   id: string | null;
@@ -21,9 +22,14 @@ const initialState: UserState = {
 
 export const loginUser = createAsyncThunk(
   "user/login",
-  async (credentials: { email: string; password: string }) => {
-    const response = await login(credentials);
-    return response.user;
+  async (credentials: LoginCredentials, { rejectWithValue }) => {
+    try {
+      const data = await login(credentials);
+      localStorage.setItem("token", data.token);
+      return data.user;
+    } catch (error) {
+      return rejectWithValue("ログインに失敗しました");
+    }
   }
 );
 

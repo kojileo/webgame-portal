@@ -77,6 +77,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             {isLoggedIn ? (
               <>
                 <NavLink to="/profile">プロフィール</NavLink>
+                <NavLink to="/upload-game">Webゲームを投稿</NavLink>
                 <NavLink to="/" onClick={handleLogout}>
                   ログアウト
                 </NavLink>

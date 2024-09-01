@@ -92,19 +92,28 @@ const GameDetailPage: React.FC = () => {
   return (
     <Layout>
       <GameContainer>
-        <>
-          <GameImage src={game.imageUrl} alt={game.title} />
-          <GameTitle>{game.title}</GameTitle>
-          <GameDescription>{game.description}</GameDescription>
-          <p>プレイ回数: {game.playCount}</p>
-          <p>カテゴリ: {game.category}</p>
-          <p>タグ: {game.tags.join(", ")}</p>
-          {isLoggedIn ? (
-            <PlayButton onClick={handlePlayGame}>プレイ開始</PlayButton>
-          ) : (
-            <p>プレイするにはログインしてください</p>
-          )}
-        </>
+        <GameImage src={game.imageUrl} alt={game.title} />
+        <GameTitle>{game.title}</GameTitle>
+        <GameDescription>{game.description}</GameDescription>
+        <p>プレイ回数: {game.playCount}</p>
+        <p>カテゴリ: {game.category}</p>
+        <p>タグ: {game.tags.join(", ")}</p>
+        <p>開発者: {game.developer}</p>
+        {isLoggedIn ? (
+          <>
+            <PlayButton
+              as="a"
+              href={game.gameUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              プレイする
+            </PlayButton>
+            <PlayButton onClick={handlePlayGame}>プレイ回数を増やす</PlayButton>
+          </>
+        ) : (
+          <p>プレイするにはログインしてください</p>
+        )}
       </GameContainer>
     </Layout>
   );

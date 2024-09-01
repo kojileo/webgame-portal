@@ -14,13 +14,21 @@ const GameGrid = styled.div`
 `;
 
 const GameCard = styled.div`
-  background-color: #16202d;
+  background-image: url("/images/match.jpg");
+  background-size: cover;
+  background-position: center;
   border-radius: 4px;
   overflow: hidden;
   transition: transform 0.2s;
   &:hover {
     transform: translateY(-5px);
   }
+`;
+
+const GameLink = styled.a`
+  display: block;
+  color: inherit;
+  text-decoration: none;
 `;
 
 const GameImage = styled.img`
@@ -44,9 +52,10 @@ const GameDescription = styled.p`
   margin: 0;
 `;
 
-const GameLink = styled(Link)`
+const ExternalGameLink = styled.a`
   display: block;
   padding: 0.5rem;
+  margin-top: 0.5rem;
   background-color: #2a475e;
   color: #c6d4df;
   text-align: center;
@@ -68,11 +77,13 @@ const FilterSelect = styled.select`
   margin-right: 1rem;
 `;
 
-const TagButton = styled.button<{ active: boolean }>`
-  background-color: ${(props) => (props.active ? "#66c0f4" : "#2a475e")};
+const TagButton = styled.button<{ $active: boolean }>`
+  background-color: ${(props) => (props.$active ? "#66c0f4" : "#2a475e")};
   color: #ffffff;
   border: none;
   padding: 0.5rem 1rem;
+  background-color: ${(props) => (props.$active ? "#66c0f4" : "#2a475e")};
+  color: ${(props) => (props.$active ? "#ffffff" : "#c6d4df")};
   margin-right: 0.5rem;
   margin-bottom: 0.5rem;
   cursor: pointer;
@@ -104,15 +115,16 @@ const GameListPage: React.FC = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    dispatch(setLoading(true));
-    fetchGames().then(
-      (gamesData) => {
-        dispatch(setGames(gamesData));
-        setFilteredGames(gamesData);
-      },
-      (error) => dispatch(setError(error.message))
-    );
-  }, [dispatch]);
+    const filtered = games.filter((game) => {
+      const categoryMatch =
+        selectedCategory === "all" || game.category === selectedCategory;
+      const tagsMatch =
+        selectedTags.length === 0 ||
+        selectedTags.every((tag) => game.tags.includes(tag));
+      return categoryMatch && tagsMatch;
+    });
+    setFilteredGames(filtered);
+  }, [games, selectedCategory, selectedTags]);
 
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedCategory(e.target.value);
@@ -143,7 +155,7 @@ const GameListPage: React.FC = () => {
         {allTags.map((tag) => (
           <TagButton
             key={tag}
-            active={selectedTags.includes(tag)}
+            $active={selectedTags.includes(tag)}
             onClick={() => handleTagToggle(tag)}
           >
             {tag}
@@ -153,16 +165,23 @@ const GameListPage: React.FC = () => {
       <GameGrid>
         {filteredGames.map((game) => (
           <GameCard key={game.id}>
-            <GameImage src={game.imageUrl} alt={game.title} />
             <GameInfo>
               <GameTitle>{game.title}</GameTitle>
               <GameDescription>
                 {game.description.substring(0, 100)}...
               </GameDescription>
-              <div>{game.category}</div>
-              <div>{game.tags.join(", ")}</div>
+              <div>カテゴリ: {game.category}</div>
+              <div>タグ: {game.tags.join(", ")}</div>
+              <div>開発者: {game.developer}</div>
+              <div>プレイ回数: {game.playCount}</div>
+              <ExternalGameLink
+                href={game.gameUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                プレイ開始
+              </ExternalGameLink>
             </GameInfo>
-            <GameLink to={`/games/${game.id}`}>詳細を見る</GameLink>
           </GameCard>
         ))}
       </GameGrid>
