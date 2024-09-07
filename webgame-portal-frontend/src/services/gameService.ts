@@ -1,15 +1,15 @@
 import api from "./api";
 
 export interface Game {
-  id: string;
+  _id: string;
   title: string;
   description: string;
   imageUrl: string;
   playCount: number;
   category: string;
   tags: string[];
-  gameUrl: string;
   developer: string;
+  gameUrl: string; // この行が存在することを確認
 }
 
 export const fetchGames = async (): Promise<Game[]> => {

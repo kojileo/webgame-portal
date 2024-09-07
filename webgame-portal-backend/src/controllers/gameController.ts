@@ -8,7 +8,8 @@ interface AuthRequest extends Request {
 }
 export const getAllGames = async (req: Request, res: Response) => {
   try {
-    const games = await Game.find();
+    const games = await Game.find().select("-__v"); // __vフィールドを除外
+    console.log("Retrieved games:", games); // この行を追加
     res.json(games);
   } catch (error) {
     res.status(500).json({ message: "ゲームの取得に失敗しました", error });

@@ -10,61 +10,77 @@ import styled from "styled-components";
 const GameGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1rem;
+  gap: 1.5rem;
 `;
 
 const GameCard = styled.div`
-  background-image: url("/images/match.jpg");
-  background-size: cover;
-  background-position: center;
-  border-radius: 4px;
+  background-color: #1b2838;
+  border-radius: 8px;
   overflow: hidden;
-  transition: transform 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  height: 300px; // カードの高さを固定
   &:hover {
     transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   }
 `;
 
-const GameLink = styled.a`
-  display: block;
-  color: inherit;
-  text-decoration: none;
-`;
-
-const GameImage = styled.img`
+const GameThumbnail = styled.img`
   width: 100%;
-  height: auto;
+  height: 200px; // サムネイルの高さを固定
+  object-fit: cover;
 `;
 
 const GameInfo = styled.div`
-  padding: 0.5rem;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
 `;
 
 const GameTitle = styled.h3`
   margin: 0 0 0.5rem 0;
-  font-size: 1rem;
+  font-size: 1.2rem;
   color: #c6d4df;
 `;
 
-const GameDescription = styled.p`
-  font-size: 0.8rem;
-  color: #8f98a0;
-  margin: 0;
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-top: auto;
 `;
 
-const ExternalGameLink = styled.a`
-  display: block;
-  padding: 0.5rem;
-  margin-top: 0.5rem;
+const DescriptionButton = styled.button`
   background-color: #2a475e;
   color: #c6d4df;
-  text-align: center;
-  text-decoration: none;
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border-radius: 4px;
   &:hover {
     background-color: #66c0f4;
     color: #ffffff;
   }
 `;
+
+const ExternalGameLink = styled.a`
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background-color: #66c0f4;
+  color: #ffffff;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 4px;
+  &:hover {
+    background-color: #1b2838;
+    color: #66c0f4;
+  }
+`;
+
 const FilterSection = styled.div`
   margin-bottom: 1rem;
 `;
@@ -92,6 +108,52 @@ const TagButton = styled.button<{ $active: boolean }>`
   }
 `;
 
+const DialogOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const DialogContent = styled.div`
+  background-color: #1b2838;
+  padding: 2rem;
+  border-radius: 4px;
+  max-width: 500px;
+  width: 90%;
+`;
+
+const DialogTitle = styled.h3`
+  color: #c6d4df;
+  margin-top: 0;
+`;
+
+const DialogInfo = styled.div`
+  color: #8f98a0;
+  margin-bottom: 1rem;
+`;
+
+const DialogDescription = styled.p`
+  color: #8f98a0;
+`;
+
+const CloseButton = styled.button`
+  background-color: #2a475e;
+  color: #c6d4df;
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  &:hover {
+    background-color: #66c0f4;
+    color: #ffffff;
+  }
+`;
+
 const GameListPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const {
@@ -102,13 +164,20 @@ const GameListPage: React.FC = () => {
   const [filteredGames, setFilteredGames] = useState<Game[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedGame, setSelectedGame] = useState<Game | null>(null);
 
   useEffect(() => {
     dispatch(setLoading(true));
     fetchGames().then(
       (gamesData) => {
+        console.log("Fetched games data:", gamesData); // この行を追加
         dispatch(setGames(gamesData));
         setFilteredGames(gamesData);
+        // ゲームデータとURLをコンソールに出力
+        console.log("取得したゲームデータ:", gamesData);
+        gamesData.forEach((game) => {
+          console.log(`${game.title}のURL:`, game.gameUrl);
+        });
       },
       (error) => dispatch(setError(error.message))
     );
@@ -164,27 +233,53 @@ const GameListPage: React.FC = () => {
       </FilterSection>
       <GameGrid>
         {filteredGames.map((game) => (
-          <GameCard key={game.id}>
+          <GameCard key={game._id}>
+            <GameThumbnail src={game.imageUrl} alt={game.title} />
             <GameInfo>
               <GameTitle>{game.title}</GameTitle>
-              <GameDescription>
-                {game.description.substring(0, 100)}...
-              </GameDescription>
-              <div>カテゴリ: {game.category}</div>
-              <div>タグ: {game.tags.join(", ")}</div>
-              <div>開発者: {game.developer}</div>
-              <div>プレイ回数: {game.playCount}</div>
-              <ExternalGameLink
-                href={game.gameUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                プレイ開始
-              </ExternalGameLink>
+              <ButtonContainer>
+                <DescriptionButton onClick={() => setSelectedGame(game)}>
+                  備考
+                </DescriptionButton>
+                <ExternalGameLink
+                  href={game.gameUrl || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => {
+                    if (!game.gameUrl) {
+                      e.preventDefault();
+                      console.log(`${game.title}のURLが設定されていません`);
+                      alert("このゲームのURLが設定されていません。");
+                    } else {
+                      console.log(
+                        `${game.title}のURLをクリック:`,
+                        game.gameUrl
+                      );
+                    }
+                  }}
+                >
+                  プレイ開始
+                </ExternalGameLink>
+              </ButtonContainer>
             </GameInfo>
           </GameCard>
         ))}
       </GameGrid>
+      {selectedGame && (
+        <DialogOverlay onClick={() => setSelectedGame(null)}>
+          <DialogContent onClick={(e) => e.stopPropagation()}>
+            <DialogTitle>{selectedGame.title}</DialogTitle>
+            <DialogInfo>カテゴリ: {selectedGame.category}</DialogInfo>
+            <DialogInfo>タグ: {selectedGame.tags.join(", ")}</DialogInfo>
+            <DialogInfo>開発者: {selectedGame.developer}</DialogInfo>
+            <DialogInfo>プレイ回数: {selectedGame.playCount}</DialogInfo>
+            <DialogDescription>{selectedGame.description}</DialogDescription>
+            <CloseButton onClick={() => setSelectedGame(null)}>
+              閉じる
+            </CloseButton>
+          </DialogContent>
+        </DialogOverlay>
+      )}
     </Layout>
   );
 };
