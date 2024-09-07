@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../store";
+import { useSelector } from "react-redux";
+import { RootState } from "../store";
 import Layout from "../components/Layout";
 import styled from "styled-components";
 import { uploadGame } from "../services/gameService";
@@ -36,15 +36,19 @@ const Button = styled.button`
   }
 `;
 
+const Select = styled.select`
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+`;
+
 const GameUploadPage: React.FC = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState("action"); // デフォルト値を "action" に設定
   const [tags, setTags] = useState("");
   const [gameUrl, setGameUrl] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
 
-  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const isLoggedIn = useSelector((state: RootState) => state.user.isLoggedIn);
 
@@ -58,25 +62,19 @@ const GameUploadPage: React.FC = () => {
     e.preventDefault();
     if (imageFile) {
       try {
-        const token = localStorage.getItem("token");
-        console.log("Token:", token); // トークンをログ出力
-        await uploadGame({
-          title,
-          description,
-          category,
-          tags: tags.split(",").map((tag) => tag.trim()),
-          gameUrl,
-          imageFile,
-        });
-        navigate("/games");
+        const formData = new FormData();
+        formData.append("title", title);
+        formData.append("description", description);
+        formData.append("category", category);
+        formData.append("tags", tags);
+        formData.append("gameUrl", gameUrl);
+        formData.append("image", imageFile);
+
+        await uploadGame(formData);
+        navigate("/");
       } catch (error) {
         console.error("ゲームのアップロードに失敗しました", error);
-        // エラーメッセージをユーザーに表示する処理を追加
-        alert(
-          error instanceof Error
-            ? error.message
-            : "ゲームのアップロードに失敗しました"
-        );
+        alert("ゲームのアップロードに失敗しました");
       }
     } else {
       alert("画像ファイルを選択してください");
@@ -100,13 +98,16 @@ const GameUploadPage: React.FC = () => {
           onChange={(e) => setDescription(e.target.value)}
           required
         />
-        <Input
-          type="text"
-          placeholder="カテゴリ"
+        <Select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
           required
-        />
+        >
+          <option value="action">アクション</option>
+          <option value="horror">ホラー</option>
+          <option value="match">恋愛</option>
+          <option value="novel">ノベル</option>
+        </Select>
         <Input
           type="text"
           placeholder="タグ（カンマ区切り）"

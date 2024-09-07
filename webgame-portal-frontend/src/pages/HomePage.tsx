@@ -65,10 +65,10 @@ const GameTitle = styled.h3`
 const HomePage: React.FC = () => {
   // フィーチャーゲームのダミーデータ
   const featuredGames = [
-    { id: 1, title: "ゲーム1", image: "/images/action.jpg" },
-    { id: 2, title: "ゲーム2", image: "/images/horror.jpg" },
-    { id: 3, title: "ゲーム3", image: "/images/match.jpg" },
-    { id: 4, title: "ゲーム4", image: "/images/novel.jpg" },
+    { id: 1, title: "アクション", image: "/images/action.jpg" },
+    { id: 2, title: "ホラー", image: "/images/horror.jpg" },
+    { id: 3, title: "恋愛", image: "/images/match.jpg" },
+    { id: 4, title: "ノベル", image: "/images/novel.jpg" },
   ];
 
   return (

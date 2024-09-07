@@ -47,11 +47,24 @@ export const createGame = async (req: AuthRequest, res: Response) => {
       return res.status(401).json({ message: "認証が必要です" });
     }
 
+    // タグの処理を修正
+    let parsedTags: string[];
+    if (typeof tags === "string") {
+      // カンマ区切りの文字列の場合
+      parsedTags = tags.split(",").map((tag) => tag.trim());
+    } else if (Array.isArray(tags)) {
+      // 既に配列の場合
+      parsedTags = tags;
+    } else {
+      // それ以外の場合は空の配列を使用
+      parsedTags = [];
+    }
+
     const game = new Game({
       title,
       description,
       category,
-      tags: Array.isArray(tags) ? tags : JSON.parse(tags),
+      tags: parsedTags,
       gameUrl,
       imageUrl,
       developer: req.userId,

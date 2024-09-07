@@ -217,9 +217,9 @@ const GameListPage: React.FC = () => {
         <FilterSelect value={selectedCategory} onChange={handleCategoryChange}>
           <option value="all">全てのカテゴリ</option>
           <option value="action">アクション</option>
-          <option value="puzzle">パズル</option>
-          <option value="strategy">戦略</option>
-          {/* 他のカテゴリを追加 */}
+          <option value="horror">ホラー</option>
+          <option value="match">恋愛</option>
+          <option value="novel">ノベル</option>
         </FilterSelect>
         {allTags.map((tag) => (
           <TagButton
