@@ -9,7 +9,9 @@ export interface Game {
   category: string;
   tags: string[];
   developer: string;
-  gameUrl: string; // この行が存在することを確認
+  gameUrl: string;
+  createdAt: string;
+  rating: number;
 }
 
 export const fetchGames = async (): Promise<Game[]> => {

@@ -22,9 +22,10 @@ export const fetchUserProfile = async (
   userId: string
 ): Promise<UserProfile> => {
   try {
-    const response = await api.get(`/users/${userId}/profile`);
+    const response = await api.get(`/users/profile/${userId}`);
     return response.data;
   } catch (error) {
+    console.error("ユーザープロフィールの取得に失敗しました", error);
     throw new Error("ユーザープロフィールの取得に失敗しました");
   }
 };
