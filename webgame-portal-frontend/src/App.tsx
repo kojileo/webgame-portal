@@ -7,6 +7,7 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import GameUploadPage from "./pages/GameUploadPage";
 import DeveloperDashboardPage from "./pages/DeveloperDashboardPage";
+import ProfileEditPage from "./pages/ProfileEditPage";
 
 const App: React.FC = () => {
   return (
@@ -22,6 +23,7 @@ const App: React.FC = () => {
           path="/developer-dashboard"
           element={<DeveloperDashboardPage />}
         />
+        <Route path="/profile/edit" element={<ProfileEditPage />} />
       </Routes>
     </Router>
   );

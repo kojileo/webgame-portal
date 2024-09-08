@@ -9,6 +9,8 @@ export interface UserProfile {
   favoriteGame: string;
   highestScore: number;
   badges: string[];
+  bio?: string;
+  isDeveloper: boolean;
   gamesPlayed: {
     gameId: string;
     gameName: string;
