@@ -12,6 +12,7 @@ export interface Game {
   gameUrl: string;
   createdAt: string;
   rating: number;
+  favoriteCount: number;
 }
 
 export const fetchGames = async (): Promise<Game[]> => {

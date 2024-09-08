@@ -238,7 +238,7 @@ const GameListPage: React.FC = () => {
             <GameInfo>
               <GameTitle>{game.title}</GameTitle>
               <ButtonContainer>
-                <DescriptionButton onClick={() => setSelectedGame(game)}>
+                <DescriptionButton as={Link} to={`/game/${game._id}`}>
                   備考
                 </DescriptionButton>
                 <ExternalGameLink

@@ -2,12 +2,12 @@ import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import GameListPage from "./pages/GameListPage";
-import GameDetailPage from "./pages/GameDetailPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import GameUploadPage from "./pages/GameUploadPage";
 import DeveloperDashboardPage from "./pages/DeveloperDashboardPage";
 import ProfileEditPage from "./pages/ProfileEditPage";
+import GameDetailPage from "./pages/GameDetailPage";
 
 const App: React.FC = () => {
   return (
@@ -24,6 +24,7 @@ const App: React.FC = () => {
           element={<DeveloperDashboardPage />}
         />
         <Route path="/profile/edit" element={<ProfileEditPage />} />
+        <Route path="/game/:id" element={<GameDetailPage />} />
       </Routes>
     </Router>
   );

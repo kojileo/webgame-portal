@@ -1,50 +1,71 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { AppDispatch, RootState } from "../store";
-import {
-  fetchGameById,
-  updateGamePlayCount,
-  Game,
-} from "../services/gameService";
+import { useParams, Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "../store";
+import { fetchGameById, Game } from "../services/gameService";
 import Layout from "../components/Layout";
 import styled from "styled-components";
 
 const GameContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  max-width: 800px;
+  margin: 0 auto;
   padding: 2rem;
 `;
 
 const GameImage = styled.img`
-  max-width: 100%;
+  width: 100%;
   height: auto;
+  border-radius: 8px;
   margin-bottom: 1rem;
 `;
 
-const GameTitle = styled.h2`
+const GameTitle = styled.h1`
   font-size: 2rem;
+  color: #c6d4df;
+  margin-bottom: 0.5rem;
+`;
+
+const GameInfo = styled.div`
+  color: #8f98a0;
   margin-bottom: 1rem;
+`;
+
+const PlayButton = styled.a`
+  display: inline-block;
+  background-color: #4caf50;
+  color: white;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  border-radius: 4px;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+
+  &:hover {
+    background-color: #45a049;
+  }
 `;
 
 const GameDescription = styled.p`
-  text-align: center;
+  color: #c6d4df;
   margin-bottom: 1rem;
 `;
 
-const PlayButton = styled.button`
-  padding: 0.5rem 1rem;
-  font-size: 1.2rem;
-  background-color: #28a745;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+const RatingBar = styled.div<{ width: number }>`
+  background-color: #f1c40f;
+  height: 20px;
+  width: ${(props) => props.width}%;
+  border-radius: 10px;
+`;
 
-  &:hover {
-    background-color: #218838;
-  }
+const ReviewSection = styled.div`
+  margin-top: 2rem;
+`;
+
+const ReviewItem = styled.div`
+  background-color: #1b2838;
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
 `;
 
 const GameDetailPage: React.FC = () => {
@@ -52,15 +73,13 @@ const GameDetailPage: React.FC = () => {
   const [game, setGame] = useState<Game | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
   const isLoggedIn = useSelector((state: RootState) => state.user.isLoggedIn);
-  const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    const loadGameAndReviews = async () => {
+    const loadGame = async () => {
       if (id) {
         try {
-          const [gameData] = await Promise.all([fetchGameById(id)]);
+          const gameData = await fetchGameById(id);
           setGame(gameData);
         } catch (err) {
           setError("データの読み込みに失敗しました");
@@ -70,20 +89,8 @@ const GameDetailPage: React.FC = () => {
       }
     };
 
-    loadGameAndReviews();
+    loadGame();
   }, [id]);
-
-  const handlePlayGame = async () => {
-    setIsPlaying(true);
-    if (id && game) {
-      try {
-        await updateGamePlayCount(id);
-        setGame({ ...game, playCount: game.playCount + 1 });
-      } catch (err) {
-        console.error("プレイ回数の更新に失敗しました", err);
-      }
-    }
-  };
 
   if (loading) return <Layout>読み込み中...</Layout>;
   if (error) return <Layout>エラー: {error}</Layout>;
@@ -94,26 +101,38 @@ const GameDetailPage: React.FC = () => {
       <GameContainer>
         <GameImage src={game.imageUrl} alt={game.title} />
         <GameTitle>{game.title}</GameTitle>
-        <GameDescription>{game.description}</GameDescription>
-        <p>プレイ回数: {game.playCount}</p>
-        <p>カテゴリ: {game.category}</p>
-        <p>タグ: {game.tags.join(", ")}</p>
-        <p>開発者: {game.developer}</p>
-        {isLoggedIn ? (
-          <>
-            <PlayButton
-              as="a"
-              href={game.gameUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              プレイする
-            </PlayButton>
-            <PlayButton onClick={handlePlayGame}>プレイ回数を増やす</PlayButton>
-          </>
-        ) : (
-          <p>プレイするにはログインしてください</p>
+        <GameInfo>
+          開発者: {game.developer} | カテゴリ: {game.category} | 公開日:{" "}
+          {new Date(game.createdAt).toLocaleDateString()}
+        </GameInfo>
+        {isLoggedIn && (
+          <PlayButton
+            href={game.gameUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            プレイする
+          </PlayButton>
         )}
+        <GameDescription>{game.description}</GameDescription>
+        <div>
+          評価: {game.rating}/5
+          <RatingBar width={game.rating * 20} />
+        </div>
+        <div>プレイ回数: {game.playCount}</div>
+        <div>お気に入り数: {game.favoriteCount}</div>
+        <ReviewSection>
+          <h2>レビュー</h2>
+          {/* ここにレビューのマッピングを追加 */}
+          <ReviewItem>
+            <h3>ユーザー名1</h3>
+            <p>とても面白いゲームです！...</p>
+          </ReviewItem>
+          <ReviewItem>
+            <h3>ユーザー名2</h3>
+            <p>グラフィックが素晴らしいです...</p>
+          </ReviewItem>
+        </ReviewSection>
       </GameContainer>
     </Layout>
   );
