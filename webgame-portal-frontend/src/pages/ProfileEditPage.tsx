@@ -200,17 +200,6 @@ const ProfileEditPage: React.FC = () => {
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
         </FormGroup>
-        <FormGroup>
-          <Label>開発者アカウントを有効にする</Label>
-          <ToggleSwitch>
-            <ToggleInput
-              type="checkbox"
-              checked={isDeveloper}
-              onChange={(e) => setIsDeveloper(e.target.checked)}
-            />
-            <ToggleSlider />
-          </ToggleSwitch>
-        </FormGroup>
         <Button type="submit">変更を保存</Button>
       </Form>
     </Layout>

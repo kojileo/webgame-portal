@@ -7,6 +7,9 @@ import {
   getAllGames,
   getGameById,
   updatePlayCount,
+  getDeveloperGames,
+  updateGame,
+  deleteGame,
 } from "../controllers/gameController";
 import { auth } from "../middleware/auth";
 
@@ -28,7 +31,10 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 router.get("/", getAllGames);
+router.get("/developer", auth, getDeveloperGames);
 router.get("/:id", getGameById);
+router.put("/:id", auth, updateGame);
+router.delete("/:id", auth, deleteGame);
 router.post("/", auth, upload.single("image"), createGame);
 router.post("/:id/play", updatePlayCount);
 

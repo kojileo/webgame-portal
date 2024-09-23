@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../store";
 import { setGames, setLoading, setError } from "../store/gamesSlice";
-import { Game, fetchGames } from "../services/gameService";
+import { IGame, fetchGames } from "../services/gameService";
 import Layout from "../components/Layout";
 import styled from "styled-components";
 
@@ -162,10 +162,10 @@ const GameListPage: React.FC = () => {
     loading,
     error,
   } = useSelector((state: RootState) => state.games);
-  const [filteredGames, setFilteredGames] = useState<Game[]>([]);
+  const [filteredGames, setFilteredGames] = useState<IGame[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [selectedGame, setSelectedGame] = useState<Game | null>(null);
+  const [selectedGame, setSelectedGame] = useState<IGame | null>(null);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);

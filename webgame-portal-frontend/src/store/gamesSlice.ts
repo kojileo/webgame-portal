@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Game } from "../services/gameService";
+import { IGame } from "../services/gameService";
 
 interface GamesState {
-  list: Game[];
+  list: IGame[];
   loading: boolean;
   error: string | null;
 }
@@ -17,7 +17,7 @@ const gamesSlice = createSlice({
   name: "games",
   initialState,
   reducers: {
-    setGames: (state, action: PayloadAction<Game[]>) => {
+    setGames: (state, action: PayloadAction<IGame[]>) => {
       state.list = action.payload;
       state.loading = false;
       state.error = null;

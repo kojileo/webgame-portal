@@ -5,7 +5,7 @@ import { RootState } from "../store";
 import Layout from "../components/Layout";
 import styled from "styled-components";
 import { fetchUserProfile, UserProfile } from "../services/userService";
-import { Game } from "../services/gameService";
+import { fetchDeveloperGames, IGame } from "../services/gameService";
 
 const ProfileHeader = styled.div`
   display: flex;
@@ -116,7 +116,7 @@ const UploadButton = styled(Link)`
 const DeveloperDashboardPage: React.FC = () => {
   const userId = useSelector((state: RootState) => state.user.id);
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [games, setGames] = useState<Game[]>([]);
+  const [games, setGames] = useState<IGame[]>([]);
 
   useEffect(() => {
     const loadProfileAndGames = async () => {
@@ -124,12 +124,10 @@ const DeveloperDashboardPage: React.FC = () => {
         try {
           const profileData = await fetchUserProfile(userId);
           setProfile(profileData);
-          // TODO: Implement fetchDeveloperGames in gameService
-          // const gamesData = await fetchDeveloperGames(userId);
-          // setGames(gamesData);
+          const gamesData = await fetchDeveloperGames();
+          setGames(gamesData);
         } catch (error) {
           console.error("Failed to load profile or games", error);
-          // エラーメッセージを表示するための状態を追加することをお勧めします
         }
       }
     };
@@ -151,7 +149,7 @@ const DeveloperDashboardPage: React.FC = () => {
         <UserInfo>
           <Username>{profile.username}</Username>
           <Email>{profile.email}</Email>
-          <DeveloperStatus>開発者ステータス: アクティブ</DeveloperStatus>
+          {profile.bio && <p>{profile.bio}</p>}
         </UserInfo>
         <EditProfileButton to="/profile/edit">
           プロフィール編集

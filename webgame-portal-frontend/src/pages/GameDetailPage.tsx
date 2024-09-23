@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../store";
-import { fetchGameById, Game } from "../services/gameService";
+import { fetchGameById, IGame } from "../services/gameService";
 import Layout from "../components/Layout";
 import styled from "styled-components";
 import { FaPlay, FaStar } from "react-icons/fa";
@@ -111,7 +111,7 @@ const ReviewText = styled.p`
 
 const GameDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const [game, setGame] = useState<Game | null>(null);
+  const [game, setGame] = useState<IGame | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const isLoggedIn = useSelector((state: RootState) => state.user.isLoggedIn);

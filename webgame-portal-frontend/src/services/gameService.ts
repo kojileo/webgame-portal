@@ -1,6 +1,6 @@
 import api from "./api";
 
-export interface Game {
+export interface IGame {
   _id: string;
   title: string;
   description: string;
@@ -15,7 +15,7 @@ export interface Game {
   favoriteCount: number;
 }
 
-export const fetchGames = async (): Promise<Game[]> => {
+export const fetchGames = async (): Promise<IGame[]> => {
   try {
     const response = await api.get("/games");
     return response.data;
@@ -24,12 +24,12 @@ export const fetchGames = async (): Promise<Game[]> => {
   }
 };
 
-export const fetchGameById = async (id: string): Promise<Game> => {
+export const fetchGameById = async (id: string): Promise<IGame> => {
   try {
     const response = await api.get(`/games/${id}`);
     return response.data;
   } catch (error) {
-    throw new Error("ゲームの詳細取得に失敗しました");
+    throw new Error("ゲームの取得に失敗しました");
   }
 };
 
@@ -41,20 +41,40 @@ export const updateGamePlayCount = async (gameId: string): Promise<void> => {
   }
 };
 
-interface GameUploadData {
-  title: string;
-  description: string;
-  category: string;
-  tags: string[];
-  gameUrl: string;
-  imageFile: File;
-}
-
-export const uploadGame = async (formData: FormData): Promise<Game> => {
+export const uploadGame = async (formData: FormData): Promise<IGame> => {
   const response = await api.post("/games", formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
   });
   return response.data;
+};
+
+export const fetchDeveloperGames = async (): Promise<IGame[]> => {
+  try {
+    const response = await api.get("/games/developer");
+    return response.data;
+  } catch (error) {
+    throw new Error("開発者のゲーム取得に失敗しました");
+  }
+};
+
+export const updateGame = async (
+  id: string,
+  gameData: Partial<IGame>
+): Promise<IGame> => {
+  try {
+    const response = await api.put(`/games/${id}`, gameData);
+    return response.data;
+  } catch (error) {
+    throw new Error("ゲームの更新に失敗しました");
+  }
+};
+
+export const deleteGame = async (id: string): Promise<void> => {
+  try {
+    await api.delete(`/games/${id}`);
+  } catch (error) {
+    throw new Error("ゲームの削除に失敗しました");
+  }
 };

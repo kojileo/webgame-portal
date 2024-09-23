@@ -6,10 +6,10 @@ import path from "path";
 interface AuthRequest extends Request {
   userId?: string;
 }
+
 export const getAllGames = async (req: Request, res: Response) => {
   try {
-    const games = await Game.find().select("-__v"); // __vフィールドを除外
-    console.log("Retrieved games:", games); // この行を追加
+    const games = await Game.find().select("-__v");
     res.json(games);
   } catch (error) {
     res.status(500).json({ message: "ゲームの取得に失敗しました", error });
@@ -33,30 +33,16 @@ export const createGame = async (req: AuthRequest, res: Response) => {
     const { title, description, category, tags, gameUrl } = req.body;
     const imageUrl = req.file ? `/uploads/${req.file.filename}` : undefined;
 
-    console.log("Received data:", {
-      title,
-      description,
-      category,
-      tags,
-      gameUrl,
-      imageUrl,
-      userId: req.userId,
-    });
-
     if (!req.userId) {
       return res.status(401).json({ message: "認証が必要です" });
     }
 
-    // タグの処理を修正
     let parsedTags: string[];
     if (typeof tags === "string") {
-      // カンマ区切りの文字列の場合
       parsedTags = tags.split(",").map((tag) => tag.trim());
     } else if (Array.isArray(tags)) {
-      // 既に配列の場合
       parsedTags = tags;
     } else {
-      // それ以外の場合は空の配列を使用
       parsedTags = [];
     }
 
@@ -72,22 +58,9 @@ export const createGame = async (req: AuthRequest, res: Response) => {
 
     await game.save();
     res.status(201).json(game);
-    const uploadsDir = path.join(__dirname, "../../uploads");
-    if (!fs.existsSync(uploadsDir)) {
-      fs.mkdirSync(uploadsDir, { recursive: true });
-    }
-  } catch (error: unknown) {
+  } catch (error) {
     console.error("Error creating game:", error);
-    if (error instanceof Error) {
-      res
-        .status(500)
-        .json({ message: "ゲームの作成に失敗しました", error: error.message });
-    } else {
-      res.status(500).json({
-        message: "ゲームの作成に失敗しました",
-        error: "Unknown error",
-      });
-    }
+    res.status(500).json({ message: "ゲームの作成に失敗しました", error });
   }
 };
 
@@ -104,5 +77,76 @@ export const updatePlayCount = async (req: Request, res: Response) => {
     res.json(game);
   } catch (error) {
     res.status(500).json({ message: "プレイ回数の更新に失敗しました", error });
+  }
+};
+
+export const getDeveloperGames = async (req: AuthRequest, res: Response) => {
+  try {
+    if (!req.userId) {
+      return res.status(401).json({ message: "認証が必要です" });
+    }
+    const games = await Game.find({ developer: req.userId }).select("-__v");
+    res.json(games);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "開発者のゲーム取得に失敗しました", error });
+  }
+};
+
+export const updateGame = async (req: AuthRequest, res: Response) => {
+  try {
+    if (!req.userId) {
+      return res.status(401).json({ message: "認証が必要です" });
+    }
+
+    const { id } = req.params;
+    const { title, description, category, tags, gameUrl } = req.body;
+
+    let parsedTags: string[];
+    if (typeof tags === "string") {
+      parsedTags = tags.split(",").map((tag) => tag.trim());
+    } else if (Array.isArray(tags)) {
+      parsedTags = tags;
+    } else {
+      parsedTags = [];
+    }
+
+    const game = await Game.findOneAndUpdate(
+      { _id: id, developer: req.userId },
+      { title, description, category, tags: parsedTags, gameUrl },
+      { new: true }
+    );
+
+    if (!game) {
+      return res.status(404).json({ message: "ゲームが見つかりません" });
+    }
+
+    res.json(game);
+  } catch (error) {
+    res.status(500).json({ message: "ゲームの更新に失敗しました", error });
+  }
+};
+
+export const deleteGame = async (req: AuthRequest, res: Response) => {
+  try {
+    if (!req.userId) {
+      return res.status(401).json({ message: "認証が必要です" });
+    }
+
+    const { id } = req.params;
+
+    const game = await Game.findOneAndDelete({
+      _id: id,
+      developer: req.userId,
+    });
+
+    if (!game) {
+      return res.status(404).json({ message: "ゲームが見つかりません" });
+    }
+
+    res.json({ message: "ゲームが削除されました" });
+  } catch (error) {
+    res.status(500).json({ message: "ゲームの削除に失敗しました", error });
   }
 };

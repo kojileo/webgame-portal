@@ -8,6 +8,7 @@ import GameUploadPage from "./pages/GameUploadPage";
 import DeveloperDashboardPage from "./pages/DeveloperDashboardPage";
 import ProfileEditPage from "./pages/ProfileEditPage";
 import GameDetailPage from "./pages/GameDetailPage";
+import EditGamePage from "./pages/EditGamePage";
 
 const App: React.FC = () => {
   return (
@@ -25,6 +26,7 @@ const App: React.FC = () => {
         />
         <Route path="/profile/edit" element={<ProfileEditPage />} />
         <Route path="/game/:id" element={<GameDetailPage />} />
+        <Route path="/edit-game/:id" element={<EditGamePage />} />
       </Routes>
     </Router>
   );
