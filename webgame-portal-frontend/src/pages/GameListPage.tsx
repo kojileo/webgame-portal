@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../store";
 import { setGames, setLoading, setError } from "../store/gamesSlice";
@@ -156,6 +156,7 @@ const CloseButton = styled.button`
 
 const GameListPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const location = useLocation();
   const {
     list: games,
     loading,
@@ -167,17 +168,19 @@ const GameListPage: React.FC = () => {
   const [selectedGame, setSelectedGame] = useState<Game | null>(null);
 
   useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const categoryParam = searchParams.get("category");
+    if (categoryParam) {
+      setSelectedCategory(categoryParam);
+    }
+  }, [location]);
+
+  useEffect(() => {
     dispatch(setLoading(true));
     fetchGames().then(
       (gamesData) => {
-        console.log("Fetched games data:", gamesData); // この行を追加
         dispatch(setGames(gamesData));
         setFilteredGames(gamesData);
-        // ゲームデータとURLをコンソールに出力
-        console.log("取得したゲームデータ:", gamesData);
-        gamesData.forEach((game) => {
-          console.log(`${game.title}のURL:`, game.gameUrl);
-        });
       },
       (error) => dispatch(setError(error.message))
     );
@@ -224,10 +227,10 @@ const GameListPage: React.FC = () => {
           <option value="puzzle-brain">パズル・脳トレ</option>
           <option value="sports-racing">スポーツ・レーシング</option>
           <option value="shooting">シューティング</option>
-          <option value="casual-party">カジュアル・パーティー</option>
+          <option value="novel">ノベル</option>
           <option value="music-rhythm">音楽・リズム</option>
-          <option value="card-board">カード・ボード</option>
-          <option value="social-online">ソーシャル・オンライン</option>
+          <option value="love">恋愛</option>
+          <option value="horror">ホラー</option>
         </FilterSelect>
         {allTags.map((tag) => (
           <TagButton

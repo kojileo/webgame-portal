@@ -111,10 +111,10 @@ const GameUploadPage: React.FC = () => {
           <option value="puzzle-brain">パズル・脳トレ</option>
           <option value="sports-racing">スポーツ・レーシング</option>
           <option value="shooting">シューティング</option>
-          <option value="casual-party">カジュアル・パーティー</option>
+          <option value="novel">ノベル</option>
           <option value="music-rhythm">音楽・リズム</option>
-          <option value="card-board">カード・ボード</option>
-          <option value="social-online">ソーシャル・オンライン</option>
+          <option value="love">恋愛</option>
+          <option value="horror">ホラー</option>
         </Select>
         <Input
           type="text"

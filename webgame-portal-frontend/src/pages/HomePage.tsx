@@ -34,10 +34,11 @@ const CTAButton = styled(Link)`
   }
 `;
 
-const FeaturedGames = styled.div`
+const FeaturedGames = styled(Link)`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 1rem;
+  text-decoration: none;
 `;
 
 const GameCard = styled.div`
@@ -69,20 +70,42 @@ const HomePage: React.FC = () => {
       id: 1,
       title: "アクション・アドベンチャー",
       image: "/images/action-adventure.jpg",
+      category: "action-adventure",
     },
-    { id: 2, title: "RPG", image: "/images/rpg.jpg" },
+    { id: 2, title: "RPG", image: "/images/rpg.jpg", category: "rpg" },
     {
       id: 3,
       title: "シミュレーション・ストラテジー",
       image: "/images/simulation-strategy.jpg",
+      category: "simulation-strategy",
     },
-    { id: 4, title: "パズル・脳トレ", image: "/images/puzzle-brain.jpg" },
-    { id: 5, title: "音楽・リズム", image: "/images/music.jpg" },
-    { id: 6, title: "スポーツ・レーシング", image: "/images/sports-race.jpg" },
-    { id: 7, title: "ノベル", image: "/images/novel.jpg" },
-    { id: 8, title: "恋愛", image: "/images/love.jpg" },
-    { id: 9, title: "ホラー", image: "/images/horror.jpg" },
-    { id: 10, title: "シューティング", image: "/images/shooting.jpg" },
+    {
+      id: 4,
+      title: "パズル・脳トレ",
+      image: "/images/puzzle-brain.jpg",
+      category: "puzzle-brain",
+    },
+    {
+      id: 5,
+      title: "音楽・リズム",
+      image: "/images/music.jpg",
+      category: "music-rhythm",
+    },
+    {
+      id: 6,
+      title: "スポーツ・レーシング",
+      image: "/images/sports-race.jpg",
+      category: "sports-racing",
+    },
+    { id: 7, title: "ノベル", image: "/images/novel.jpg", category: "novel" },
+    { id: 8, title: "恋愛", image: "/images/love.jpg", category: "love" },
+    { id: 9, title: "ホラー", image: "/images/horror.jpg", category: "horror" },
+    {
+      id: 10,
+      title: "シューティング",
+      image: "/images/shooting.jpg",
+      category: "shooting",
+    },
   ];
 
   return (
@@ -96,14 +119,22 @@ const HomePage: React.FC = () => {
       </HeroSection>
 
       <h2>カテゴリー毎にゲームを閲覧</h2>
-      <FeaturedGames>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+          gap: "1rem",
+        }}
+      >
         {featuredGames.map((game) => (
-          <GameCard key={game.id}>
-            <GameImage src={game.image} alt={game.title} />
-            <GameTitle>{game.title}</GameTitle>
-          </GameCard>
+          <FeaturedGames to={`/games?category=${game.category}`} key={game.id}>
+            <GameCard>
+              <GameImage src={game.image} alt={game.title} />
+              <GameTitle>{game.title}</GameTitle>
+            </GameCard>
+          </FeaturedGames>
         ))}
-      </FeaturedGames>
+      </div>
     </Layout>
   );
 };
