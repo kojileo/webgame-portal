@@ -216,10 +216,18 @@ const GameListPage: React.FC = () => {
       <FilterSection>
         <FilterSelect value={selectedCategory} onChange={handleCategoryChange}>
           <option value="all">全てのカテゴリ</option>
-          <option value="action">アクション</option>
-          <option value="horror">ホラー</option>
-          <option value="match">恋愛</option>
-          <option value="novel">ノベル</option>
+          <option value="action-adventure">アクション・アドベンチャー</option>
+          <option value="rpg">RPG</option>
+          <option value="simulation-strategy">
+            シミュレーション・ストラテジー
+          </option>
+          <option value="puzzle-brain">パズル・脳トレ</option>
+          <option value="sports-racing">スポーツ・レーシング</option>
+          <option value="shooting">シューティング</option>
+          <option value="casual-party">カジュアル・パーティー</option>
+          <option value="music-rhythm">音楽・リズム</option>
+          <option value="card-board">カード・ボード</option>
+          <option value="social-online">ソーシャル・オンライン</option>
         </FilterSelect>
         {allTags.map((tag) => (
           <TagButton

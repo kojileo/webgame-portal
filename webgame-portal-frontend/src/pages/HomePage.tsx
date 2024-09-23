@@ -65,21 +65,37 @@ const GameTitle = styled.h3`
 const HomePage: React.FC = () => {
   // フィーチャーゲームのダミーデータ
   const featuredGames = [
-    { id: 1, title: "アクション", image: "/images/action.jpg" },
-    { id: 2, title: "ホラー", image: "/images/horror.jpg" },
-    { id: 3, title: "恋愛", image: "/images/match.jpg" },
-    { id: 4, title: "ノベル", image: "/images/novel.jpg" },
+    {
+      id: 1,
+      title: "アクション・アドベンチャー",
+      image: "/images/action-adventure.jpg",
+    },
+    { id: 2, title: "RPG", image: "/images/rpg.jpg" },
+    {
+      id: 3,
+      title: "シミュレーション・ストラテジー",
+      image: "/images/simulation-strategy.jpg",
+    },
+    { id: 4, title: "パズル・脳トレ", image: "/images/puzzle-brain.jpg" },
+    { id: 5, title: "音楽・リズム", image: "/images/music.jpg" },
+    { id: 6, title: "スポーツ・レーシング", image: "/images/sports-race.jpg" },
+    { id: 7, title: "ノベル", image: "/images/novel.jpg" },
+    { id: 8, title: "恋愛", image: "/images/love.jpg" },
+    { id: 9, title: "ホラー", image: "/images/horror.jpg" },
+    { id: 10, title: "シューティング", image: "/images/shooting.jpg" },
   ];
 
   return (
     <Layout>
       <HeroSection>
         <HeroTitle>Webゲームポータルへようこそ</HeroTitle>
-        <HeroSubtitle>最新のWebゲームを楽しもう！</HeroSubtitle>
+        <HeroSubtitle>
+          自身が作成したWebゲームを投稿し、みんなが投稿したWebゲームを遊びつくそう！
+        </HeroSubtitle>
         <CTAButton to="/games">ゲームを探す</CTAButton>
       </HeroSection>
 
-      <h2>注目のゲーム</h2>
+      <h2>カテゴリー毎にゲームを閲覧</h2>
       <FeaturedGames>
         {featuredGames.map((game) => (
           <GameCard key={game.id}>
