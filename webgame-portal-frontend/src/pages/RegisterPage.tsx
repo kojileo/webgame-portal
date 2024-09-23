@@ -18,6 +18,11 @@ const Input = styled.input`
   padding: 0.5rem;
 `;
 
+const TextArea = styled.textarea`
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+`;
+
 const Button = styled.button`
   padding: 0.5rem;
   background-color: #28a745;
@@ -35,20 +40,23 @@ const ErrorMessage = styled.p`
 `;
 
 const RegisterPage: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+  const loading = useSelector((state: RootState) => state.user.loading);
+  const error = useSelector((state: RootState) => state.user.error);
+
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const dispatch = useDispatch<AppDispatch>();
-  const navigate = useNavigate();
-  const { loading, error } = useSelector((state: RootState) => state.user);
+  const [bio, setBio] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await dispatch(registerUser({ username, email, password })).unwrap();
-      navigate("/");
+      await dispatch(registerUser({ username, email, password, bio })).unwrap();
+      navigate("/developer-dashboard");
     } catch (err) {
-      // エラーは既に store で処理されています
+      console.error("Failed to register user", err);
     }
   };
 
@@ -76,6 +84,12 @@ const RegisterPage: React.FC = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
+        />
+        <TextArea
+          placeholder="自己紹介"
+          value={bio}
+          onChange={(e) => setBio(e.target.value)}
+          rows={4}
         />
         <Button type="submit" disabled={loading}>
           {loading ? "登録中..." : "登録"}

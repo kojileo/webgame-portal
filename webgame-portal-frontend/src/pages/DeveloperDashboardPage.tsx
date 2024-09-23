@@ -85,49 +85,6 @@ const GameList = muiStyled("div")({
   gap: "20px",
 });
 
-const GameItem = muiStyled("div")({
-  backgroundColor: "white",
-  border: "1px solid #ddd",
-  borderRadius: "5px",
-  padding: "15px",
-});
-
-const GameTitle = muiStyled("h4")({
-  marginTop: 0,
-});
-
-const GameStats = muiStyled("p")({
-  margin: "5px 0",
-  fontSize: "0.9em",
-  color: "#666",
-});
-
-const EditGameButton = muiStyled(Link)({
-  display: "inline-block",
-  backgroundColor: "#ffc107",
-  color: "black",
-  padding: "5px 10px",
-  borderRadius: "5px",
-  textDecoration: "none",
-  fontSize: "0.8em",
-  "&:hover": {
-    backgroundColor: "#e0a800",
-  },
-});
-
-const UploadButton = muiStyled(Link)({
-  display: "inline-block",
-  backgroundColor: "#28a745",
-  color: "white",
-  padding: "10px 20px",
-  borderRadius: "5px",
-  textDecoration: "none",
-  fontWeight: "bold",
-  "&:hover": {
-    backgroundColor: "#218838",
-  },
-});
-
 const DeveloperDashboardPage: React.FC = () => {
   const userId = useSelector((state: RootState) => state.user.id);
   const [profile, setProfile] = useState<UserProfile | null>(null);

@@ -39,6 +39,7 @@ export const registerUser = createAsyncThunk(
     username: string;
     email: string;
     password: string;
+    bio?: string;
   }) => {
     const response = await register(credentials);
     return response.user;
