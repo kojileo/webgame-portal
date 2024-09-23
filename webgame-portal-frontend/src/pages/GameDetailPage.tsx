@@ -1,71 +1,112 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../store";
 import { fetchGameById, Game } from "../services/gameService";
 import Layout from "../components/Layout";
 import styled from "styled-components";
+import { FaPlay, FaStar } from "react-icons/fa";
 
 const GameContainer = styled.div`
-  max-width: 800px;
+  max-width: 900px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 2rem 1rem;
+  color: #fff;
+`;
+
+const GameHeader = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 `;
 
 const GameImage = styled.img`
   width: 100%;
-  height: auto;
-  border-radius: 8px;
-  margin-bottom: 1rem;
+  max-height: 500px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
 `;
 
 const GameTitle = styled.h1`
-  font-size: 2rem;
-  color: #c6d4df;
+  font-size: 2.5rem;
+  font-weight: bold;
   margin-bottom: 0.5rem;
 `;
 
 const GameInfo = styled.div`
-  color: #8f98a0;
+  font-size: 1rem;
+  color: #b0b0b0;
   margin-bottom: 1rem;
 `;
 
 const PlayButton = styled.a`
-  display: inline-block;
-  background-color: #4caf50;
-  color: white;
-  padding: 0.5rem 1rem;
+  display: inline-flex;
+  align-items: center;
+  background-color: #e94560;
+  color: #fff;
+  padding: 0.75rem 1.5rem;
   text-decoration: none;
-  border-radius: 4px;
-  font-size: 1.2rem;
-  margin-bottom: 1rem;
+  border-radius: 8px;
+  font-size: 1.25rem;
+  margin: 1.5rem 0;
+  transition: background-color 0.3s;
 
   &:hover {
-    background-color: #45a049;
+    background-color: #d63650;
+  }
+
+  & > svg {
+    margin-right: 0.5rem;
   }
 `;
 
 const GameDescription = styled.p`
-  color: #c6d4df;
-  margin-bottom: 1rem;
+  font-size: 1.125rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
 `;
 
-const RatingBar = styled.div<{ width: number }>`
-  background-color: #f1c40f;
-  height: 20px;
-  width: ${(props) => props.width}%;
-  border-radius: 10px;
+const StatsSection = styled.div`
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 2rem;
+`;
+
+const StatItem = styled.div`
+  text-align: center;
+`;
+
+const StatNumber = styled.div`
+  font-size: 1.5rem;
+  font-weight: bold;
+`;
+
+const StatLabel = styled.div`
+  font-size: 1rem;
+  color: #b0b0b0;
 `;
 
 const ReviewSection = styled.div`
-  margin-top: 2rem;
+  margin-top: 3rem;
 `;
 
 const ReviewItem = styled.div`
-  background-color: #1b2838;
-  padding: 1rem;
-  border-radius: 4px;
-  margin-bottom: 1rem;
+  background-color: #2b2b2b;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+`;
+
+const ReviewerName = styled.h3`
+  font-size: 1.125rem;
+  margin-bottom: 0.5rem;
+`;
+
+const ReviewText = styled.p`
+  font-size: 1rem;
+  line-height: 1.6;
 `;
 
 const GameDetailPage: React.FC = () => {
@@ -99,38 +140,50 @@ const GameDetailPage: React.FC = () => {
   return (
     <Layout>
       <GameContainer>
-        <GameImage src={game.imageUrl} alt={game.title} />
-        <GameTitle>{game.title}</GameTitle>
-        <GameInfo>
-          開発者: {game.developer} | カテゴリ: {game.category} | 公開日:{" "}
-          {new Date(game.createdAt).toLocaleDateString()}
-        </GameInfo>
-        {isLoggedIn && (
-          <PlayButton
-            href={game.gameUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            プレイする
-          </PlayButton>
-        )}
+        <GameHeader>
+          <GameImage src={game.imageUrl} alt={game.title} />
+          <GameTitle>{game.title}</GameTitle>
+          <GameInfo>
+            開発者: {game.developer} | カテゴリ: {game.category} | 公開日:{" "}
+            {new Date(game.createdAt).toLocaleDateString()}
+          </GameInfo>
+          {isLoggedIn && (
+            <PlayButton
+              href={game.gameUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <FaPlay /> プレイする
+            </PlayButton>
+          )}
+        </GameHeader>
         <GameDescription>{game.description}</GameDescription>
-        <div>
-          評価: {game.rating}/5
-          <RatingBar width={game.rating * 20} />
-        </div>
-        <div>プレイ回数: {game.playCount}</div>
-        <div>お気に入り数: {game.favoriteCount}</div>
+        <StatsSection>
+          <StatItem>
+            <StatNumber>
+              <FaStar color="#f1c40f" /> {game.rating}/5
+            </StatNumber>
+            <StatLabel>評価</StatLabel>
+          </StatItem>
+          <StatItem>
+            <StatNumber>{game.playCount}</StatNumber>
+            <StatLabel>プレイ回数</StatLabel>
+          </StatItem>
+          <StatItem>
+            <StatNumber>{game.favoriteCount}</StatNumber>
+            <StatLabel>お気に入り数</StatLabel>
+          </StatItem>
+        </StatsSection>
         <ReviewSection>
           <h2>レビュー</h2>
           {/* ここにレビューのマッピングを追加 */}
           <ReviewItem>
-            <h3>ユーザー名1</h3>
-            <p>とても面白いゲームです！...</p>
+            <ReviewerName>ユーザー名1</ReviewerName>
+            <ReviewText>とても面白いゲームです！...</ReviewText>
           </ReviewItem>
           <ReviewItem>
-            <h3>ユーザー名2</h3>
-            <p>グラフィックが素晴らしいです...</p>
+            <ReviewerName>ユーザー名2</ReviewerName>
+            <ReviewText>グラフィックが素晴らしいです...</ReviewText>
           </ReviewItem>
         </ReviewSection>
       </GameContainer>
