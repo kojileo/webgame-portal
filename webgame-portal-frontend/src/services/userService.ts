@@ -37,7 +37,7 @@ export const updateUserProfile = async (
   profileData: Partial<UserProfile>
 ): Promise<UserProfile> => {
   try {
-    const response = await api.put(`/users/${userId}/profile`, profileData);
+    const response = await api.put(`/users/profile/${userId}`, profileData);
     return response.data;
   } catch (error) {
     throw new Error("ユーザープロフィールの更新に失敗しました");
