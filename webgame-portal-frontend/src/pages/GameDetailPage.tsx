@@ -133,6 +133,24 @@ const GameDetailPage: React.FC = () => {
     loadGame();
   }, [id]);
 
+  // カテゴリーに基づいて画像を取得する関数
+  const getCategoryImage = (category: string) => {
+    const categoryImages: { [key: string]: string } = {
+      "action-adventure": "/images/action-adventure.jpg",
+      "rpg": "/images/rpg.jpg",
+      "simulation-strategy": "/images/simulation-strategy.jpg",
+      "puzzle-brain": "/images/puzzle-brain.jpg",
+      "sports-racing": "/images/sports-race.jpg",
+      "shooting": "/images/shooting.jpg",
+      "novel": "/images/novel.jpg",
+      "music-rhythm": "/images/music.jpg",
+      "love": "/images/love.jpg",
+      "horror": "/images/horror.jpg",
+    };
+
+    return categoryImages[category] || "/images/default.jpg";
+  };
+
   if (loading) return <Layout>読み込み中...</Layout>;
   if (error) return <Layout>エラー: {error}</Layout>;
   if (!game) return <Layout>ゲームが見つかりません</Layout>;
@@ -141,7 +159,7 @@ const GameDetailPage: React.FC = () => {
     <Layout>
       <GameContainer>
         <GameHeader>
-          <GameImage src={game.imageUrl} alt={game.title} />
+          <GameImage src={getCategoryImage(game.category)} alt={game.title} />
           <GameTitle>{game.title}</GameTitle>
           <GameInfo>
             開発者: {game.developer} | カテゴリ: {game.category} | 公開日:{" "}

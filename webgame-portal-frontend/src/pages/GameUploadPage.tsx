@@ -44,10 +44,9 @@ const Select = styled.select`
 const GameUploadPage: React.FC = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("action"); // デフォルト値を "action" に設定
+  const [category, setCategory] = useState("action-adventure");
   const [tags, setTags] = useState("");
   const [gameUrl, setGameUrl] = useState("");
-  const [imageFile, setImageFile] = useState<File | null>(null);
 
   const navigate = useNavigate();
   const isLoggedIn = useSelector((state: RootState) => state.user.isLoggedIn);
@@ -60,24 +59,19 @@ const GameUploadPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (imageFile) {
-      try {
-        const formData = new FormData();
-        formData.append("title", title);
-        formData.append("description", description);
-        formData.append("category", category);
-        formData.append("tags", tags);
-        formData.append("gameUrl", gameUrl);
-        formData.append("image", imageFile);
+    try {
+      const formData = new FormData();
+      formData.append("title", title);
+      formData.append("description", description);
+      formData.append("category", category);
+      formData.append("tags", tags);
+      formData.append("gameUrl", gameUrl);
 
-        await uploadGame(formData);
-        navigate("/");
-      } catch (error) {
-        console.error("ゲームのアップロードに失敗しました", error);
-        alert("ゲームのアップロードに失敗しました");
-      }
-    } else {
-      alert("画像ファイルを選択してください");
+      await uploadGame(formData);
+      navigate("/");
+    } catch (error) {
+      console.error("ゲームのアップロードに失敗しました", error);
+      alert("ゲームのアップロードに失敗しました");
     }
   };
 
@@ -127,14 +121,6 @@ const GameUploadPage: React.FC = () => {
           placeholder="ゲームURL"
           value={gameUrl}
           onChange={(e) => setGameUrl(e.target.value)}
-          required
-        />
-        <Input
-          type="file"
-          accept="image/*"
-          onChange={(e) =>
-            setImageFile(e.target.files ? e.target.files[0] : null)
-          }
           required
         />
         <Button type="submit">アップロード</Button>

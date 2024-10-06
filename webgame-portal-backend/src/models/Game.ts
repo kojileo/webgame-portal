@@ -14,7 +14,7 @@ export interface IGame extends Document {
 const GameSchema: Schema = new Schema({
   title: { type: String, required: true },
   description: { type: String, required: true },
-  imageUrl: { type: String, required: true },
+  imageUrl: { type: String, required: false },
   playCount: { type: Number, default: 0 },
   category: { type: String, required: true },
   tags: [{ type: String }],

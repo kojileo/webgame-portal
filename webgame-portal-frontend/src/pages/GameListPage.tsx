@@ -210,6 +210,24 @@ const GameListPage: React.FC = () => {
 
   const allTags = Array.from(new Set(games.flatMap((game) => game.tags)));
 
+  // カテゴリーに基づいて画像を取得する関数
+  const getCategoryImage = (category: string) => {
+    const categoryImages: { [key: string]: string } = {
+      "action-adventure": "/images/action-adventure.jpg",
+      "rpg": "/images/rpg.jpg",
+      "simulation-strategy": "/images/simulation-strategy.jpg",
+      "puzzle-brain": "/images/puzzle-brain.jpg",
+      "sports-racing": "/images/sports-race.jpg",
+      "shooting": "/images/shooting.jpg",
+      "novel": "/images/novel.jpg",
+      "music-rhythm": "/images/music.jpg",
+      "love": "/images/love.jpg",
+      "horror": "/images/horror.jpg",
+    };
+
+    return categoryImages[category] || "/images/default.jpg";
+  };
+
   if (loading) return <Layout>読み込み中...</Layout>;
   if (error) return <Layout>エラー: {error}</Layout>;
 
@@ -245,7 +263,7 @@ const GameListPage: React.FC = () => {
       <GameGrid>
         {filteredGames.map((game) => (
           <GameCard key={game._id}>
-            <GameThumbnail src={game.imageUrl} alt={game.title} />
+            <GameThumbnail src={getCategoryImage(game.category)} alt={game.title} />
             <GameInfo>
               <GameTitle>{game.title}</GameTitle>
               <ButtonContainer>
